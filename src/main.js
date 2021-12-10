@@ -23,12 +23,11 @@ renderTemplate(tripPointsElement, createPointsListFilterTemplate(), RenderPositi
 renderTemplate(tripPointsElement, createPointListTemplate(), RenderPosition.BEFOREEND);
 
 const pointListElement = tripPointsElement.querySelector('.trip-events__list');
+
+renderTemplate(pointListElement[0], createEditPointTemplate(), RenderPosition.AFTERBEGIN);
+
 const POINT_COUNT = 3;
 
-for (let i = 0; i <= POINT_COUNT; i++) {
-  if (i === 0) {
-    renderTemplate(pointListElement, createEditPointTemplate(), RenderPosition.AFTERBEGIN);
-  } else {
-    renderTemplate(pointListElement, createPointItemTemplate(), RenderPosition.BEFOREEND);
-  }
+for (let i = 1; i <= POINT_COUNT; i++) {
+  renderTemplate(pointListElement, createPointItemTemplate(), RenderPosition.BEFOREEND);
 }
