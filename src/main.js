@@ -6,6 +6,7 @@ import {createPointsListFilterTemplate} from './view/points-list-filter-view';
 import {createPointListTemplate} from './view/point-list-view';
 import {createPointItemTemplate} from './view/point-item-view';
 import {createEditPointTemplate} from './view/edit-point-view';
+import {generatePoint} from './mock/point';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteMenuElement = document.querySelector('.trip-main__trip-controls');
@@ -22,12 +23,14 @@ const tripPointsElement = pageMainElement.querySelector('.trip-events');
 renderTemplate(tripPointsElement, createPointsListFilterTemplate(), RenderPosition.AFTERBEGIN);
 renderTemplate(tripPointsElement, createPointListTemplate(), RenderPosition.BEFOREEND);
 
+const POINT_COUNT = 18;
+
+const points = Array.from({length: POINT_COUNT}, generatePoint);
+
 const pointListElement = tripPointsElement.querySelector('.trip-events__list');
 
-renderTemplate(pointListElement[0], createEditPointTemplate(), RenderPosition.AFTERBEGIN);
-
-const POINT_COUNT = 3;
+renderTemplate(pointListElement, createEditPointTemplate(), RenderPosition.AFTERBEGIN);
 
 for (let i = 1; i <= POINT_COUNT; i++) {
-  renderTemplate(pointListElement, createPointItemTemplate(), RenderPosition.BEFOREEND);
+  renderTemplate(pointListElement, createPointItemTemplate(points[i]), RenderPosition.BEFOREEND);
 }
