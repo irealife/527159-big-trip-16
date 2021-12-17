@@ -9,18 +9,18 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export const getOffersPoint = (offers) => {
-  const offersPoint = [];
+export const getPointOffers = (offers) => {
+  const pointOffers = [];
   for (const offer of offers) {
     const {title, price} = offer;
-      offersPoint.push(
+      pointOffers.push(
         `<li class="event__offer">
           <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
           <span class="event__offer-price">${price}</span>
         </li>`
       )
-    return `<ul class="event__selected-offers">${offersPoint.join('')}</ul>`;
+    return `${pointOffers.join('')}`;
   }
 };
 

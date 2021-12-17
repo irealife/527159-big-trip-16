@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
-import {getOffersPoint, getDateDuration} from '../utils';
+import {getPointOffers, getDateDuration} from '../utils';
 
 export const createPointItemTemplate = (point) => {
   const {dateTimeStartEvent, pointType, destination, dateTimeEndEvent, price, offers, isFavorite} = point;
-  const offersPoint = offers.size !== 0 ? getOffersPoint(offers) : '';
+  const pointOfferList = offers.length !== 0 ? getPointOffers(offers) : '';
 
   return  `<li class="trip-events__item">
     <div class="event">
@@ -14,9 +14,9 @@ export const createPointItemTemplate = (point) => {
       <h3 class="event__title">${pointType} ${destination}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime=${dayjs(dateTimeStartEvent).format('YYYY-MM-DDTHH:mm')}>${dayjs(dateTimeStartEvent).format('HH:mm')}</time>
+          <time class="event__start-time" datetime=${dayjs(dateTimeStartEvent).format('YYYY-MM-DD HH:mm')}>${dayjs(dateTimeStartEvent).format('HH:mm')}</time>
           &mdash;
-          <time class="event__end-time" datetime=${dayjs(dateTimeEndEvent).format('YYYY-MM-DDTHH:mm')}>${dayjs(dateTimeEndEvent).format('HH:mm')}</time>
+          <time class="event__end-time" datetime=${dayjs(dateTimeEndEvent).format('YYYY-MM-DD HH:mm')}>${dayjs(dateTimeEndEvent).format('HH:mm')}</time>
         </p>
         <p class="event__duration">${getDateDuration(dateTimeStartEvent, dateTimeEndEvent)}</p>
       </div>
@@ -24,7 +24,7 @@ export const createPointItemTemplate = (point) => {
         &euro;&nbsp;<span class="event__price-value">${price}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
-      ${offersPoint}
+      <ul class="event__selected-offers">${pointOfferList}</ul>
       <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">

@@ -29,8 +29,8 @@ const points = Array.from({length: POINT_COUNT}, generatePoint);
 
 const pointListElement = tripPointsElement.querySelector('.trip-events__list');
 
-renderTemplate(pointListElement, createEditPointTemplate(), RenderPosition.AFTERBEGIN);
+renderTemplate(pointListElement, createEditPointTemplate(points[0]), RenderPosition.AFTERBEGIN);
 
-for (let i = 1; i <= POINT_COUNT; i++) {
+for (let i = 1; i < POINT_COUNT; i++) {
   renderTemplate(pointListElement, createPointItemTemplate(points[i]), RenderPosition.BEFOREEND);
 }

@@ -13,13 +13,46 @@ const pointTypes = [
   'restaurant',
 ];
 
-export const destinations = [
-  'Amsterdam',
-  'Cheboksary',
-  'Qatar',
-  'Dubai',
-  'Moscow',
-  'Ottawa',
+export const Destination = {
+  Amsterdam: 'Amsterdam',
+  Cheboksary: 'Cheboksary',
+  Qatar: 'Qatar',
+  Dubai: 'Dubai',
+  Moscow: 'Moscow',
+  Ottawa: 'Ottawa',
+};
+
+export const destinations = Object.values(Destination);
+
+const destinationTexts = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',
+  'Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.',
+  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis.',
+  'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.'
+];
+
+const destinationPhotos = [
+  'img/photos/1.jpg',
+  'img/photos/2.jpg',
+  'img/photos/3.jpg',
+  'img/photos/4.jpg',
+  'img/photos/5.jpg',
+];
+
+const titleOffers = [
+  'Upgrade to a business class',
+  'Choose the radio station',
+  'Add luggage',
+  'Switch to comfort',
+  'Add breakfast',
+];
+const priceOffers = [
+  '69',
+  '89',
+  '68',
+  '98',
+  '86',
 ];
 
 const generatePointType = () => pointTypes[getRandomInteger(0, pointTypes.length - 1)];
@@ -27,60 +60,31 @@ const generatePointType = () => pointTypes[getRandomInteger(0, pointTypes.length
 const generateDestination = () => destinations[getRandomInteger(0, destinations.length - 1)];
 
 const generateDestinationInfo = () => {
-  const destinationText = [
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',
-    'Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.',
-    'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-    'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis.',
-    'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.'
-  ];
-  const destinationPhoto = [
-    '../../img/photos/1.jpg',
-    '../../img/photos/2.jpg',
-    '../../img/photos/3.jpg',
-    '../../img/photos/4.jpg',
-    '../../img/photos/5.jpg',
-  ];
   return {
-    text: destinationText[getRandomInteger(0, destinationText.length - 1)],
-    photo: destinationPhoto[getRandomInteger(0, destinationPhoto.length - 1)],
+    text: destinationTexts[getRandomInteger(0, destinationTexts.length - 1)],
+    photo: destinationPhotos[getRandomInteger(0, destinationPhotos.length - 1)],
   };
 };
 
-const destinationDescription = new Map();
-const generateDestinationDescription = () => {
+export const generateDestinationDescriptions = () => {
+  const descriptions = {};
   for (const destination of destinations) {
-    const destinationDescriptions = new Array(getRandomInteger(0, 4)).fill('').map(generateDestinationInfo);
-    destinationDescription.set(destination, destinationDescriptions);
+    descriptions[destination] = generateDestinationInfo();
   }
-  return destinationDescription;
+  return descriptions;
 };
 
-const generateOffer = () => {
-  const offerTitle = [
-    'Upgrade to a business class',
-    'Choose the radio station',
-    'Add luggage',
-    'Switch to comfort',
-    'Add breakfast',
-  ];
-  const offerPrice = [
-    '69',
-    '89',
-    '68',
-    '98',
-    '86',
-  ];
+const generateOffers = () => {
   return {
-    title: offerTitle[getRandomInteger(0, offerTitle.length - 1)],
-    price: offerPrice[getRandomInteger(0, offerPrice.length - 1)],
+    title: titleOffers[getRandomInteger(0, titleOffers.length - 1)],
+    price: priceOffers[getRandomInteger(0, priceOffers.length - 1)],
   };
 };
 
 const offers = new Map();
-const generateOffersPoint = () => {
+export const generatePointOffers = () => {
   for (const pointType of pointTypes) {
-    const additionalOptions = new Array(getRandomInteger(0, 4)).fill('').map(generateOffer);
+    const additionalOptions = new Array(getRandomInteger(0, 4)).fill('').map(generateOffers);
     offers.set(pointType, additionalOptions);
   }
   return offers;
@@ -91,15 +95,15 @@ const dateTimeEndEvent = (dateStart) => dayjs(dateStart).add(getRandomInteger(3,
 
 export const generatePoint = () => {
   const pointType = generatePointType();
-  const offers = generateOffersPoint();
+  const pointOffers = generatePointOffers();
   return {
     pointType,
     destination: generateDestination(),
     dateTimeStartEvent: dateTimeStartEvent(),
     dateTimeEndEvent: dateTimeEndEvent(dateTimeStartEvent()),
     price: getRandomInteger(60, 148),
-    offers: offers.get(pointType),
+    offers: pointOffers.get(pointType),
     isFavorite: getRandomInteger(0, 1),
-    destinationDescription: generateDestinationDescription(),
+    descriptions: generateDestinationDescriptions(),
   };
 };
