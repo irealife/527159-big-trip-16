@@ -1,5 +1,11 @@
-import dayjs from 'dayjs';
-import {destinations} from '../mock/point';
+import {pointTypes} from '../const';
+import {destinations, toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils';
+
+const createPointTypes = (pointTypeCurrent) =>
+  pointTypes.map((type) => `<div class="event__type-item">
+    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointTypeCurrent === type ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${toUpperCaseFirstSymbol(type)}</label>
+  </div>`).join('');
 
 const createPointOffers = (offer) => {
   const {title, price, isChecked} = offer;
@@ -11,16 +17,19 @@ const createPointOffers = (offer) => {
               &plus;&euro;&nbsp;
               <span class="event__offer-price">${price}</span>
             </label>
-          </div>`
-}
+          </div>`;
+};
 
-export const createEditPointTemplate = (point) => {
-  const {dateTimeStartEvent, pointType, destination, descriptions, dateTimeEndEvent, price, offers, isFavorite} = point;
+export const createEditPointTemplate = (point = {}) => {
+  const {dateFrom = null, pointType = 'taxi', destination = 'Cheboksary', descriptions = '', dateTo = null, price = '', offers = ''} = point;
+
+  const pointTypesItem = createPointTypes(pointType);
+
   const destinationOptions = destinations.map((destinationValue) => `<option value="${destinationValue}"></option>`).join('');
 
-  const descriptionValues = Object.values(descriptions);
+  const pointOffers = offers.map((item) => createPointOffers(item)).join('');
 
-  //console.log(descriptionValues[0]);
+  const descriptionValues = descriptions[destination];
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -30,73 +39,25 @@ export const createEditPointTemplate = (point) => {
           <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-
-            <div class="event__type-item">
-              <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'taxi' === pointType ? 'taxi checked' : 'taxi'}>
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'bus' === pointType ? 'bus checked' : 'bus'}>
-              <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'train' === pointType ? 'train checked' : 'train'}>
-              <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'ship' === pointType ? 'ship checked' : 'ship'}>
-              <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'drive' === pointType ? 'drive checked' : 'drive'}>
-              <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'flight' === pointType ? 'flight checked' : 'flight'}>
-              <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'check-in' === pointType ? 'check-in checked' : 'check-in'}>
-              <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'sightseeing' === pointType ? 'sightseeing checked' : 'sightseeing'}>
-              <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-            </div>
-
-            <div class="event__type-item">
-              <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${'restaurant' === pointType ? 'restaurant checked' : 'restaurant'}>
-              <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-            </div>
-          </fieldset>
+              ${pointTypesItem}
+           </fieldset>
         </div>
       </div>
-
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">${pointType}</label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination} list="destination-list-1">
         <datalist id="destination-list-1">${destinationOptions}</datalist>
       </div>
-
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${dayjs(dateTimeStartEvent).format('DD/MM/YYYY HH:mm')}>
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${getDateTimeFullFormat(dateFrom)}>
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${dayjs(dateTimeEndEvent).format('DD/MM/YYYY HH:mm')}>
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${getDateTimeFullFormat(dateTo)}>
       </div>
-
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">${price}</span>
@@ -104,7 +65,6 @@ export const createEditPointTemplate = (point) => {
         </label>
         <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${price}>
       </div>
-
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
       <button class="event__rollup-btn" type="button">
@@ -114,16 +74,14 @@ export const createEditPointTemplate = (point) => {
     <section class="event__details">
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
         <div class="event__available-offers">
-          ${offers.map((item) => createPointOffers(item)).join('')}
+          ${pointOffers}
         </div>
       </section>
-
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${descriptionValues[0].text}</p>
+        <p class="event__destination-description">${descriptionValues.text}</p>
       </section>
     </section>
-  </form>`
+  </form>`;
 };
