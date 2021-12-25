@@ -1,27 +1,26 @@
 import {pointTypes} from '../const';
 import {destinations, toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils';
 
-const createPointTypes = (pointTypeCurrent) =>
-  pointTypes.map((type) => `<div class="event__type-item">
-    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointTypeCurrent === type ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${toUpperCaseFirstSymbol(type)}</label>
-  </div>`).join('');
-
-const createPointOffers = (offer) => {
-  const {title, price, isChecked} = offer;
-
-  return `<div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1" type="checkbox" name="event-offer-${title}" ${isChecked ? 'checked' : ''}>
-            <label class="event__offer-label" for="event-offer-${title}-1">
-              <span class="event__offer-title">${title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${price}</span>
-            </label>
-          </div>`;
-};
-
 export const createEditPointTemplate = (point = {}) => {
   const {dateFrom = null, pointType = 'taxi', destination = 'Cheboksary', descriptions = '', dateTo = null, price = '', offers = ''} = point;
+
+  const createPointTypes = (pointTypeCurrent) =>
+    pointTypes.map((type) => `<div class="event__type-item">
+      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointTypeCurrent === type ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${toUpperCaseFirstSymbol(type)}</label>
+    </div>`).join('');
+
+  const createPointOffers = (offer) => {
+    const {title, price, isChecked} = offer;
+    return `<div class="event__offer-selector">
+              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1" type="checkbox" name="event-offer-${title}" ${isChecked ? 'checked' : ''}>
+              <label class="event__offer-label" for="event-offer-${title}-1">
+                <span class="event__offer-title">${title}</span>
+                &plus;&euro;&nbsp;
+                <span class="event__offer-price">${price}</span>
+              </label>
+          </div>`;
+  };
 
   const pointTypesItem = createPointTypes(pointType);
 

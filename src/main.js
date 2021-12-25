@@ -1,4 +1,4 @@
-import {renderTemplate} from './render';
+import {RenderPosition, renderTemplate} from './render';
 import {createSiteMenuTripTemplate} from './view/site-menu-trip-view';
 import {createSiteMenuNavigationTemplate} from './view/site-menu-navigation-view';
 import {createSiteMenuFilterTemplate} from './view/site-menu-filter-view';
@@ -7,7 +7,7 @@ import {createPointListTemplate} from './view/point-list-view';
 import {createPointItemTemplate} from './view/point-item-view';
 import {createEditPointTemplate} from './view/edit-point-view';
 import {generatePoint} from './mock/point';
-import {POINT_COUNT, RenderPosition} from './const';
+import {POINT_COUNT} from './const';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteMenuElement = document.querySelector('.trip-main__trip-controls');
