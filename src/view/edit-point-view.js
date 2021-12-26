@@ -1,8 +1,19 @@
 import {pointTypes} from '../const';
 import {destinations, toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils';
+import {createElement} from '../render';
 
-export const createEditPointTemplate = (point = {}) => {
-  const {dateFrom = null, pointType = 'taxi', destination = 'Cheboksary', descriptions = '', dateTo = null, price = '', offers = ''} = point;
+const BLANK_POINT = {
+  dateFrom: null,
+  pointType: pointTypes[0],
+  destination: destinations[0],
+  descriptions: '',
+  dateTo: null,
+  price: '',
+  offers: '',
+};
+
+const createEditPointTemplate = (point) => {
+  const {dateFrom, pointType, destination, descriptions, dateTo, price, offers} = point;
 
   const createPointTypes = (pointTypeCurrent) =>
     pointTypes.map((type) => `<div class="event__type-item">
@@ -12,6 +23,7 @@ export const createEditPointTemplate = (point = {}) => {
 
   const createPointOffers = (offer) => {
     const {title, price, isChecked} = offer;
+
     return `<div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}-1" type="checkbox" name="event-offer-${title}" ${isChecked ? 'checked' : ''}>
               <label class="event__offer-label" for="event-offer-${title}-1">
@@ -26,9 +38,11 @@ export const createEditPointTemplate = (point = {}) => {
 
   const destinationOptions = destinations.map((destinationValue) => `<option value="${destinationValue}"></option>`).join('');
 
-  const pointOffers = offers.map((item) => createPointOffers(item)).join('');
-
   const descriptionValues = descriptions[destination];
+
+  const offersList = Object.values(offers);
+
+  const pointOffers = offersList.map((item) => createPointOffers(item)).join('');
 
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -84,3 +98,27 @@ export const createEditPointTemplate = (point = {}) => {
     </section>
   </form>`;
 };
+
+export default class EditPointView {
+  #element = null;
+  #point = null;
+
+  constructor(point = BLANK_POINT) {
+    this.#point = point;
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createEditPointTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

@@ -1,4 +1,5 @@
 import {getDateDuration, getDateStartFormat, getDateNoYearFormat, getDateTimeFullFormat, getTimeFormat} from '../utils';
+import {createElement} from '../render';
 
 const getPointOffers = (offers) => {
   const pointOffers = [];
@@ -15,7 +16,7 @@ const getPointOffers = (offers) => {
   }
 };
 
-export const createPointItemTemplate = (point) => {
+const createPointItemTemplate = (point) => {
   const {dateFrom, pointType, destination, dateTo, price, offers, isFavorite} = point;
   const pointOfferList = offers.length !== 0 ? getPointOffers(offers) : '';
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
@@ -53,3 +54,27 @@ export const createPointItemTemplate = (point) => {
     </div>
   </li>`;
 };
+
+export default class PointItemView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if(!this.#element) {
+      this.#element = createElement(this.template);
+    }
+    return this.#element;
+  }
+
+  get template() {
+    return createPointItemTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
