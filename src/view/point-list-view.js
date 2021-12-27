@@ -16,7 +16,7 @@ export default class PointListView {
     return createPointListTemplate();
   }
 
-  get removeElement() {
+  removeElement() {
     this.#element = null;
   }
 }
