@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import {Destination, PointStateFilter, PointListSort} from './const';
+import {PointStateFilter, PointListSort} from './const';
 dayjs.extend(duration);
+import {Destination} from './mock/point';
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));

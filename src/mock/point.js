@@ -1,16 +1,51 @@
 import {getRandomInteger, dateTimeStartEvent, dateTimeEndEvent, destinations} from '../utils';
-import {pointTypes, destinationTexts, destinationPhotos, titleOffers, priceOffers} from '../const';
+import {pointTypes} from '../const';
 
-const generatePointType = () => pointTypes[getRandomInteger(0, pointTypes.length - 1)];
+const titleOffers = [
+  'Upgrade to a business class',
+  'Choose the radio station',
+  'Add luggage',
+  'Switch to comfort',
+  'Add breakfast',
+];
 
-const generateDestination = () => destinations[getRandomInteger(0, destinations.length - 1)];
+const priceOffers = [
+  '69',
+  '89',
+  '68',
+  '98',
+  '86',
+];
 
-const generateDestinationInfo = () => {
-  return {
-    text: destinationTexts[getRandomInteger(0, destinationTexts.length - 1)],
-    photo: destinationPhotos[getRandomInteger(0, destinationPhotos.length - 1)],
-  };
+export const Destination = {
+  Amsterdam: 'Amsterdam',
+  Cheboksary: 'Cheboksary',
+  Qatar: 'Qatar',
+  Dubai: 'Dubai',
+  Moscow: 'Moscow',
+  Ottawa: 'Ottawa',
 };
+
+const destinationTexts = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',
+  'Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.',
+  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis.',
+  'Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.'
+];
+
+const destinationPhotos = [
+  'img/photos/1.jpg',
+  'img/photos/2.jpg',
+  'img/photos/3.jpg',
+  'img/photos/4.jpg',
+  'img/photos/5.jpg',
+];
+
+const generateDestinationInfo = () => ({
+  text: destinationTexts[getRandomInteger(0, destinationTexts.length - 1)],
+  photo: destinationPhotos[getRandomInteger(0, destinationPhotos.length - 1)],
+});
 
 export const generateDestinationDescriptions = () => {
   const descriptions = {};
@@ -20,12 +55,10 @@ export const generateDestinationDescriptions = () => {
   return descriptions;
 };
 
-const generateOffers = () => {
-  return {
-    title: titleOffers[getRandomInteger(0, titleOffers.length - 1)],
-    price: priceOffers[getRandomInteger(0, priceOffers.length - 1)],
-  };
-};
+const generateOffers = () => ({
+  title: titleOffers[getRandomInteger(0, titleOffers.length - 1)],
+  price: priceOffers[getRandomInteger(0, priceOffers.length - 1)],
+});
 
 const offers = new Map();
 export const generatePointOffers = () => {
@@ -37,11 +70,11 @@ export const generatePointOffers = () => {
 };
 
 export const generatePoint = () => {
-  const pointType = generatePointType();
+  const pointType = pointTypes[getRandomInteger(0, pointTypes.length - 1)];
   const pointOffers = generatePointOffers();
   return {
     pointType,
-    destination: generateDestination(),
+    destination: destinations[getRandomInteger(0, destinations.length - 1)],
     dateFrom: dateTimeStartEvent(),
     dateTo: dateTimeEndEvent(dateTimeStartEvent()),
     price: getRandomInteger(60, 148),
