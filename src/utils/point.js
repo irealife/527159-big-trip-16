@@ -1,15 +1,9 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import {PointStateFilter, PointListSort} from './const';
+import {PointStateFilter, PointListSort} from '../const';
 dayjs.extend(duration);
-import {Destination} from './mock/point';
-
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
+import {Destination} from '../mock/point';
+import {getRandomInteger} from './common';
 
 export const dateTimeStartEvent = () => dayjs().add(getRandomInteger(1, 150), 'minute').toDate();
 

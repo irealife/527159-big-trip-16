@@ -1,4 +1,5 @@
-import {getRandomInteger, dateTimeStartEvent, dateTimeEndEvent, destinations} from '../utils';
+import {dateTimeStartEvent, dateTimeEndEvent, destinations} from '../utils/point';
+import {getRandomInteger} from '../utils/common';
 import {pointTypes} from '../const';
 
 const titleOffers = [
