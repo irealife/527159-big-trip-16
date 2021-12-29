@@ -1,4 +1,4 @@
-export const POINT_COUNT = 18;
+export const POINT_COUNT = 23;
 
 export const PointStateFilter = {
   EVERYTHING: 'everything',
