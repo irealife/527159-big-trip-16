@@ -1,5 +1,5 @@
-import {getDateDuration, getDateStartFormat, getDateNoYearFormat, getDateTimeFullFormat, getTimeFormat} from '../utils';
-import {createElement} from '../render';
+import {getDateDuration, getDateStartFormat, getDateNoYearFormat, getDateTimeFullFormat, getTimeFormat} from '../utils/point';
+import AbstractView from './abstract-view';
 
 const getPointOffers = (offers) => {
   const pointOffers = [];
@@ -47,26 +47,25 @@ const createPointItemTemplate = (point) => `<li class="trip-events__item">
   </div>
 </li>`;
 
-export default class PointItemView {
-  #element = null;
+export default class PointItemView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
     return createPointItemTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 }

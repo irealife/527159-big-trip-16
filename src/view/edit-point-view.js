@@ -1,6 +1,6 @@
 import {pointTypes} from '../const';
-import {destinations, toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils';
-import {createElement} from '../render';
+import {destinations, toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils/point';
+import AbstractView from './abstract-view';
 
 const BLANK_POINT = {
   dateFrom: null,
@@ -83,26 +83,25 @@ const createEditPointTemplate = (point) => `<form class="event event--edit" acti
   </section>
 </form>`;
 
-export default class EditPointView {
-  #element = null;
+export default class EditPointView extends AbstractView {
   #point = null;
 
   constructor(point = BLANK_POINT) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
   }
 
   get template() {
     return createEditPointTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setCloseEditClickHandler = (callback) => {
+    this._callback.closeEditClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
+  }
+
+  #closeEditClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeEditClick();
   }
 }

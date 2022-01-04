@@ -1,6 +1,6 @@
-import {pointListSorts} from '../utils';
+import {pointListSorts} from '../utils/point';
 import {PointListSort} from '../const';
-import {createElement} from '../render';
+import AbstractView from './abstract-view';
 
 const createPointListSorts = (pointListSortCurrent = PointListSort.DAY) => pointListSorts.map((sort) => `<div class="trip-sort__item  trip-sort__item--${sort}">
   <input id="sort-${sort}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${sort}" ${pointListSortCurrent === sort ? 'checked' : ''}>
@@ -9,21 +9,8 @@ const createPointListSorts = (pointListSortCurrent = PointListSort.DAY) => point
 
 const createPointsListFilterTemplate = () => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">${createPointListSorts()}</form>`;
 
-export default class PointsListFilterView {
-  #element = null;
-
-  get element () {
-    if(!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
+export default class PointsListFilterView extends AbstractView {
   get template() {
     return createPointsListFilterTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
