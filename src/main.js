@@ -17,12 +17,9 @@ render(siteControlsFiltersElement, new SiteMenuFilterView(), RenderPosition.BEFO
 
 const pageMainElement = document.querySelector('.page-main');
 const tripPointsElement = pageMainElement.querySelector('.trip-events');
-const pointListElement = tripPointsElement.querySelector('.trip-events__list');
-console.log(tripPointsElement);
-console.log(pointListElement);
 
 const points = Array.from({length: POINT_COUNT}, generatePoint);
 
-const tripPresenter = new TripPresenter(tripPointsElement, pointListElement);
+const tripPresenter = new TripPresenter(tripPointsElement);
 
 tripPresenter.init(points);

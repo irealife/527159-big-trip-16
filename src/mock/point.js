@@ -1,3 +1,4 @@
+import {nanoid} from 'nanoid';
 import {dateTimeStartEvent, dateTimeEndEvent, destinations} from '../utils/point';
 import {getRandomInteger} from '../utils/common';
 import {pointTypes} from '../const';
@@ -74,13 +75,14 @@ export const generatePoint = () => {
   const pointType = pointTypes[getRandomInteger(0, pointTypes.length - 1)];
   const pointOffers = generatePointOffers();
   return {
+    id: nanoid(),
     pointType,
     destination: destinations[getRandomInteger(0, destinations.length - 1)],
     dateFrom: dateTimeStartEvent(),
     dateTo: dateTimeEndEvent(dateTimeStartEvent()),
     price: getRandomInteger(60, 148),
     offers: pointOffers.get(pointType),
-    isFavorite: getRandomInteger(0, 1),
+    isFavorite: Math.random() < 0.5,
     descriptions: generateDestinationDescriptions(),
   };
 };
