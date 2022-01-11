@@ -1,13 +1,31 @@
-import {pointListSorts} from '../utils/point';
 import {SortType} from '../const';
 import AbstractView from './abstract-view';
 
-const createPointListSorts = (pointListSortCurrent = SortType.DAY) => pointListSorts.map((sort) => `<div class="trip-sort__item  trip-sort__item--${sort}">
-  <input id="sort-${sort}" data-sort-type="${sort}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${sort}" ${pointListSortCurrent === sort ? 'checked' : ''}>
-    <label class="trip-sort__btn" data-sort-type="${sort}" for="sort-${sort}">${sort}</label>
-</div>`).join('');
+const disabledSortTypes = [
+  SortType.EVENT,
+  SortType.OFFERS,
+];
 
-const createPointsListFilterTemplate = () => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">${createPointListSorts()}</form>`;
+const createPointsListFilterTemplate = () => {
+  const sortingElements = Object.values(SortType).map((sort) => `<div class="trip-sort__item  trip-sort__item--${sort}">
+    <input
+      id="sort-${sort}"
+      class="trip-sort__input  visually-hidden"
+      type="radio"
+      name="trip-sort"
+      value="${sort}"
+      ${sort === SortType.DAY ? 'checked' : ''}
+      ${disabledSortTypes.includes(sort) ? 'disabled' : ''}
+    />
+    <label
+      class="trip-sort__btn"
+      for="sort-${sort}"
+    >
+      ${sort}
+    </label>
+</div>`).join('');
+  return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">${sortingElements}</form>`;
+};
 
 export default class PointsListSortView extends AbstractView {
   get template() {
@@ -16,14 +34,11 @@ export default class PointsListSortView extends AbstractView {
 
   setSortTypeChangeHandler = (callback) => {
     this._callback.sortTypeChange = callback;
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
+    this.element.addEventListener('change', this.#sortTypeChangeHandler);
   }
 
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT' && evt.target.tagName !== 'LABEL') {
-      return;
-    }
     evt.preventDefault();
-    this._callback.sortTypeChange(evt.target.dataset.sortType);
+    this._callback.sortTypeChange(evt.target.value);
   }
 }

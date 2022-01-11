@@ -14,9 +14,9 @@ export default class TripPresenter {
   #pointEmptyComponent = new PointListEmpty();
 
   #tripPoints = [];
+  #sourceTripPoints = [];
   #pointPresenter = new Map();
   #currentSortType = SortType.DAY;
-  #sourceTripPoints = [];
 
   constructor(tripContainer) {
     this.#tripContainer = tripContainer;
@@ -63,7 +63,7 @@ export default class TripPresenter {
     }
     this.#sortPoints(sortType);
     this.#clearPointList();
-    this.#renderPointList();
+    this.#renderTripPoints();
   }
 
   #renderSort = () => {
