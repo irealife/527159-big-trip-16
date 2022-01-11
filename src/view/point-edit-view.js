@@ -83,7 +83,7 @@ const createEditPointTemplate = (point) => `<form class="event event--edit" acti
   </section>
 </form>`;
 
-export default class EditPointView extends AbstractView {
+export default class PointEditView extends AbstractView {
   #point = null;
 
   constructor(point = BLANK_POINT) {
