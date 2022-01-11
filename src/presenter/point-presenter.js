@@ -1,5 +1,5 @@
 import PointItemView from '../view/point-item-view';
-import EditPointView from '../view/edit-point-view';
+import PointEditView from '../view/point-edit-view';
 import {render, RenderPosition, replace, remove} from '../utils/render';
 
 const Mode = {
@@ -28,7 +28,7 @@ export  default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
     this.#pointComponent = new PointItemView(point);
-    this.#pointEditComponent = new EditPointView(point);
+    this.#pointEditComponent = new PointEditView(point);
 
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);

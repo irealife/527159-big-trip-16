@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import {PointStateFilter, PointListSort} from '../const';
+import {StateFilter, SortType} from '../const';
 dayjs.extend(duration);
 import {Destination} from '../mock/point';
 import {getRandomInteger} from './common';
@@ -11,9 +11,9 @@ export const dateTimeEndEvent = (dateStart) => dayjs(dateStart).add(getRandomInt
 
 export const destinations = Object.values(Destination);
 
-export const pointStateFilters = Object.values(PointStateFilter);
+export const pointStateFilters = Object.values(StateFilter);
 
-export const pointListSorts = Object.values(PointListSort);
+export const pointListSorts = Object.values(SortType);
 
 export const toUpperCaseFirstSymbol = (word) => word[0].toUpperCase() + word.slice(1);
 
@@ -31,4 +31,14 @@ export const getDateDuration = (startDate, endDate) => {
   if (days === 0 && hours === 0) {return `${minutes}M`;}
   else if (days === 0) {return `${hours}H ${minutes}M`;}
   else {return `${days}D ${hours}H ${minutes}M`;}
+};
+
+export const sortByDay = (pointA, pointB) => (dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom)));
+
+export const sortByPrice = (pointA, pointB) => (pointB.price - pointA.price);
+
+export const sortByTime = (pointA, eventB) => {
+  const diffA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const diffB = dayjs(eventB.dateTo).diff(dayjs(eventB.dateFrom));
+  return diffB - diffA;
 };

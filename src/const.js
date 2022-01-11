@@ -1,12 +1,12 @@
 export const POINT_COUNT = 22;
 
-export const PointStateFilter = {
+export const StateFilter = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past',
 };
 
-export const PointListSort = {
+export const SortType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',

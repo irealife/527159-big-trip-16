@@ -1,8 +1,8 @@
 import {pointStateFilters} from '../utils/point';
-import {PointStateFilter} from '../const';
+import {StateFilter} from '../const';
 import AbstractView from './abstract-view';
 
-const createPointStateFilters = (pointFilterCurrent = PointStateFilter.EVERYTHING) => pointStateFilters.map((filter) =>`<div class="trip-filters__filter">
+const createPointStateFilters = (pointFilterCurrent = StateFilter.EVERYTHING) => pointStateFilters.map((filter) =>`<div class="trip-filters__filter">
   <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" ${pointFilterCurrent === filter ? 'checked' : ''}>
     <label class="trip-filters__filter-label" for="filter-${filter}">${filter}</label>
 </div>`).join('');
