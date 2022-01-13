@@ -124,10 +124,12 @@ export default class PointEditView extends SmartView {
   restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.saveFormSubmit);
+    this.setCloseEditClickHandler(this._callback.closeEditClick);
   }
 
   setCloseEditClickHandler = (callback) => {
     this._callback.closeEditClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
   }
 
   setFormSubmitHandler = (callback) => {
@@ -143,7 +145,6 @@ export default class PointEditView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeEditClickHandler);
   }
 
   #destinationInputHandler = (evt) => {
