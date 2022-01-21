@@ -26,7 +26,12 @@ const pageMainElement = document.querySelector('.page-main');
 const tripPointsElement = pageMainElement.querySelector('.trip-events');
 
 const filterPresenter = new FilterPresenter(siteControlsFiltersElement, filterModel);
-const tripPresenter = new TripPresenter(tripPointsElement, pointsModel);
+const tripPresenter = new TripPresenter(tripPointsElement, pointsModel, filterModel);
 
 filterPresenter.init();
 tripPresenter.init();
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createPoint();
+});

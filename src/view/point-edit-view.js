@@ -1,15 +1,18 @@
 import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import {pointTypes} from '../const';
-import {destinations, toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils/point';
+import {toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils/point';
+import {destinations} from '../mock/point';
 import SmartView from './smart-view';
+import dayjs from 'dayjs';
+import he from 'he';
 
 const BLANK_POINT = {
-  dateFrom: null,
   pointType: pointTypes[0],
   destination: destinations[0],
   descriptions: '',
-  dateTo: null,
+  dateFrom: dayjs().toDate(),
+  dateTo: dayjs().toDate(),
   price: '',
   offers: '',
 };
@@ -70,7 +73,7 @@ const createEditPointTemplate = (data) => `<form class="event event--edit" actio
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">${data.pointType}</label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${data.destination} list="destination-list-1">
-      <datalist id="destination-list-1">${destinations.map((item) => `<option value="${item}"></option>`).join('')}</datalist>
+      <datalist id="destination-list-1">${destinations.map((item) => `<option value="${he.encode(item)}"></option>`).join('')}</datalist>
     </div>
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -84,7 +87,7 @@ const createEditPointTemplate = (data) => `<form class="event event--edit" actio
         <span class="visually-hidden">${data.price}</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${data.price}>
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${data.price}>
     </div>
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Delete</button>
