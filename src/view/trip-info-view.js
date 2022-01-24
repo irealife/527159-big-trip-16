@@ -14,7 +14,7 @@ const createSiteMenuTripTemplate = () => (
   </section>`
 );
 
-export default class SiteMenuTripView extends AbstractView {
+export default class TripInfoView extends AbstractView {
   get template() {
     return createSiteMenuTripTemplate();
   }

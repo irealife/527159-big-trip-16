@@ -1,4 +1,4 @@
-import SiteMenuFilterView from '../view/site-menu-filter-view';
+import TripFiltersView from '../view/trip-filters-view';
 import {render, RenderPosition, replace, remove} from '../utils/render';
 import {UpdateType, FilterType} from '../const';
 
@@ -10,7 +10,6 @@ export default class FilterPresenter {
   constructor(filterContainer, filterModel) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
-    this.#filterModel.addObserver(this.#handleModeEvent);
   }
 
   get filters() {
@@ -33,8 +32,9 @@ export default class FilterPresenter {
   init = () => {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
-    this.#filterComponent = new SiteMenuFilterView(filters, this.#filterModel.filter);
+    this.#filterComponent = new TripFiltersView(filters, this.#filterModel.filter);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.#filterModel.addObserver(this.#handleModeEvent);
 
     if (prevFilterComponent === null) {
       render(this.#filterContainer, this.#filterComponent, RenderPosition.BEFOREEND);
@@ -43,6 +43,13 @@ export default class FilterPresenter {
 
     replace(this.#filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  destroy = () => {
+    remove(this.#filterComponent);
+    this.#filterComponent = null;
+    this.#filterModel.removeObserver(this.#handleModeEvent);
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   }
 
   #handleModeEvent = () => {
