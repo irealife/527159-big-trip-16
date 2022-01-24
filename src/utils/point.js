@@ -1,17 +1,8 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import {StateFilter} from '../const';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 dayjs.extend(duration);
-import {Destination} from '../mock/point';
-import {getRandomInteger} from './common';
-
-export const dateTimeStartEvent = () => dayjs().add(getRandomInteger(1, 150), 'minute').toDate();
-
-export const dateTimeEndEvent = (dateStart) => dayjs(dateStart).add(getRandomInteger(3, 72), 'hours').toDate();
-
-export const destinations = Object.values(Destination);
-
-export const pointStateFilters = Object.values(StateFilter);
+dayjs.extend(isSameOrAfter);
 
 export const toUpperCaseFirstSymbol = (word) => word[0].toUpperCase() + word.slice(1);
 
@@ -40,3 +31,11 @@ export const sortByTime = (pointA, pointB) => {
   const diffB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
   return diffB - diffA;
 };
+
+export const isDayEqual = (dateA, dateB) => (dayjs(dateA).isSame(dayjs(dateB)));
+
+export const isPriceEqual = (priceA, priceB) => priceA === priceB;
+
+export const isDateFuture = (date) => (!dayjs().isSameOrAfter(date));
+
+export const isDatePast = (date) => (!dayjs().isBefore(date));

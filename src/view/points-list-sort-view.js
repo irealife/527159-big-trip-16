@@ -6,7 +6,7 @@ const disabledSortTypes = [
   SortType.OFFERS,
 ];
 
-const createPointsListFilterTemplate = () => {
+const createPointsListFilterTemplate = (currentSortType) => {
   const sortingElements = Object.values(SortType).map((sort) => `<div class="trip-sort__item  trip-sort__item--${sort}">
     <input
       id="sort-${sort}"
@@ -14,7 +14,7 @@ const createPointsListFilterTemplate = () => {
       type="radio"
       name="trip-sort"
       value="${sort}"
-      ${sort === SortType.DAY ? 'checked' : ''}
+      ${sort === currentSortType ? 'checked' : ''}
       ${disabledSortTypes.includes(sort) ? 'disabled' : ''}
     />
     <label
@@ -28,8 +28,15 @@ const createPointsListFilterTemplate = () => {
 };
 
 export default class PointsListSortView extends AbstractView {
+  #currentSortType = null;
+
+  constructor(currentSortType) {
+    super();
+    this.#currentSortType = currentSortType;
+  }
+
   get template() {
-    return createPointsListFilterTemplate();
+    return createPointsListFilterTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {

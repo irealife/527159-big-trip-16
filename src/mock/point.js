@@ -1,7 +1,7 @@
 import {nanoid} from 'nanoid';
-import {dateTimeStartEvent, dateTimeEndEvent, destinations} from '../utils/point';
 import {getRandomInteger} from '../utils/common';
 import {pointTypes} from '../const';
+import dayjs from 'dayjs';
 
 const titleOffers = [
   'Upgrade to a business class',
@@ -27,6 +27,8 @@ export const Destination = {
   Moscow: 'Moscow',
   Ottawa: 'Ottawa',
 };
+
+export const destinations = Object.values(Destination);
 
 const destinationTexts = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -56,6 +58,10 @@ export const generateDestinationDescriptions = () => {
   }
   return descriptions;
 };
+
+const dateTimeStartEvent = () => dayjs().add(getRandomInteger(1, 150), 'minute').toDate();
+
+const dateTimeEndEvent = (dateStart) => dayjs(dateStart).add(getRandomInteger(3, 72), 'hours').toDate();
 
 const generateOffers = () => ({
   title: titleOffers[getRandomInteger(0, titleOffers.length - 1)],

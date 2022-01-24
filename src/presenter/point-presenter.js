@@ -1,6 +1,8 @@
 import PointItemView from '../view/point-item-view';
 import PointEditView from '../view/point-edit-view';
 import {render, RenderPosition, replace, remove} from '../utils/render';
+import {UserAction, UpdateType} from '../const';
+import {isDayEqual, isPriceEqual} from '../utils/point';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -34,6 +36,7 @@ export  default class PointPresenter {
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setCloseEditClickHandler(this.#handleEditCloseClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -85,7 +88,11 @@ export  default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   }
 
   #handleEditClick = () => {
@@ -97,8 +104,24 @@ export  default class PointPresenter {
     this.#replaceFormToPoint();
   }
 
-  #handleFormSubmit = (point) => {
-    this.#changeData(point);
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isDayEqual(this.#point.dateFrom, update.dateFrom) ||
+      !isDayEqual(this.#point.dateTo, update.dateTo) ||
+      !isPriceEqual(this.#point.price, update.price);
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
+  }
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   }
 }
