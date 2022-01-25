@@ -1,4 +1,4 @@
-export const POINT_COUNT = 3;
+export const POINT_COUNT = 36;
 
 export const pointTypes = [
   'taxi',

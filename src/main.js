@@ -3,7 +3,7 @@ import TripInfoView from './view/trip-info-view';
 import TripTabsView from './view/trip-tabs-view';
 import StatisticsView from './view/statistics-view';
 import {generatePoint} from './mock/point';
-import {POINT_COUNT, MenuItem} from './const';
+import {POINT_COUNT, MenuItem, pointTypes} from './const';
 import TripPresenter from './presenter/trip-presenter';
 import PointsModel from './model/points-model';
 import FilterModel from './model/filter-model';
@@ -44,7 +44,7 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.STATS:
       filterPresenter.destroy();
       tripPresenter.destroy();
-      statisticsComponent = new StatisticsView(pointsModel.points);
+      statisticsComponent = new StatisticsView(pointsModel.points, pointTypes);
       render(pageMainElement, statisticsComponent, RenderPosition.AFTERBEGIN);
       break;
   }

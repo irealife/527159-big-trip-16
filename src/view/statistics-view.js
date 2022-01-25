@@ -1,12 +1,28 @@
 import SmartView from './smart-view';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {getDateDuration} from '../utils/point';
 
 const ChartItem = {
   MONEY: 'money',
   TYPE: 'type',
   TIME: 'time',
+};
+
+const MIN_ONE_HOUR = 60;
+const MIN_ONE_DAY = 60 * 24;
+
+const dateFormat = (dateDuration) => {
+  const dateTime = dateDuration / 1000 / 60;
+  const days = Math.floor(dateTime / 60 / 24);
+  const hours = Math.floor(dateTime / 60 % 24);
+  const minutes = Math.floor(dateTime  % 60);
+  if (dateDuration < MIN_ONE_HOUR) {
+    return minutes < 10 ? `0${minutes}M` : `${minutes}M`;
+  }
+  if (dateDuration < MIN_ONE_DAY) {
+    return `${hours}H ${minutes}M`;
+  }
+  return `${days}D ${hours}H ${minutes}M`;
 };
 
 const renderCharts = (currentChart, ctx, labels, data) => {
@@ -24,7 +40,7 @@ const renderCharts = (currentChart, ctx, labels, data) => {
       break;
     case (ChartItem.TIME):
       title = 'TIME';
-      formatter = (val) => `${getDateDuration(val)}`;
+      formatter = (val) => `${dateFormat(val)}`;
       break;
   }
 
@@ -32,9 +48,9 @@ const renderCharts = (currentChart, ctx, labels, data) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: labels,
+      labels,
       datasets: [{
-        data: data,
+        data,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -95,16 +111,19 @@ const renderCharts = (currentChart, ctx, labels, data) => {
   });
 };
 
-const renderMoneyCharts = (moneyCtx) => {
-  renderCharts(ChartItem.MONEY, moneyCtx);
+const renderMoneyCharts = (node, points, pointTypeSortByItem) => {
+  points.forEach((point) => pointTypeSortByItem[point.pointType] += point.price);
+  return renderCharts(ChartItem.MONEY, node, Object.keys(pointTypeSortByItem), Object.values(pointTypeSortByItem));
 };
 
-const renderTypeCharts = (typeCtx) => {
-  renderCharts(ChartItem.TYPE, typeCtx);
+const renderTypeCharts = (node, points, pointTypeSortByItem) => {
+  points.forEach((point) => pointTypeSortByItem[point.pointType] += 1);
+  return renderCharts(ChartItem.TYPE, node, Object.keys(pointTypeSortByItem), Object.values(pointTypeSortByItem));
 };
 
-const renderTimeCharts = () => {
-
+const renderTimeCharts = (node, points, pointTypeSortByItem) => {
+  points.forEach((point) => pointTypeSortByItem[point.pointType] += (point.dateTo - point.dateFrom));
+  return renderCharts(ChartItem.TIME, node, Object.keys(pointTypeSortByItem), Object.values(pointTypeSortByItem));
 };
 
 const createStatisticsTemplate = () => `<section class="statistics">
@@ -125,7 +144,6 @@ export default class StatisticsView extends SmartView {
   #typeChart = null;
   #timeChart = null;
   #pointTypes = null;
-  #pointTypesTitle = null;
 
   constructor(points, pointTypes) {
     super();
@@ -133,7 +151,6 @@ export default class StatisticsView extends SmartView {
       points,
     };
     this.#pointTypes = pointTypes;
-    this.#pointTypesTitle = this.#pointTypes.map((titleType) => titleType.toUpperCase());
     this.#setCharts();
   }
 
@@ -166,12 +183,14 @@ export default class StatisticsView extends SmartView {
     const moneyCtx = this.element.querySelector('#money');
     const typeCtx = this.element.querySelector('#type');
     const timeCtx = this.element.querySelector('#time');
-    moneyCtx.height = BAR_HEIGHT * 5;
-    typeCtx.height = BAR_HEIGHT * 5;
-    timeCtx.height = BAR_HEIGHT * 5;
-    this.#moneyChart = renderMoneyCharts(moneyCtx, this._data.points, this.#pointTypes, this.#pointTypesTitle);
-    this.#typeChart = renderTypeCharts(typeCtx, this._data.points, this.#pointTypes, this.#pointTypesTitle);
-    this.#timeChart = renderTimeCharts(timeCtx, this._data.points, this.#pointTypes, this.#pointTypesTitle);
+    moneyCtx.height = BAR_HEIGHT * 8;
+    typeCtx.height = BAR_HEIGHT * 8;
+    timeCtx.height = BAR_HEIGHT * 8;
+    const pointTypeSortByItem = {};
+    this.#pointTypes.forEach((pointType) => pointTypeSortByItem[pointType] = 0);
+    this.#moneyChart = renderMoneyCharts(moneyCtx, this._data.points, {...pointTypeSortByItem});
+    this.#typeChart = renderTypeCharts(typeCtx, this._data.points, {...pointTypeSortByItem});
+    this.#timeChart = renderTimeCharts(timeCtx, this._data.points, {...pointTypeSortByItem});
   }
 }
 
