@@ -1,4 +1,4 @@
-export const POINT_COUNT = 3;
+export const POINT_COUNT = 36;
 
 export const pointTypes = [
   'taxi',
@@ -36,4 +36,10 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+};
+
+export const MenuItem = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+  ADD_NEW_EVENT: 'New event',
 };
