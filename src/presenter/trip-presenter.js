@@ -3,10 +3,11 @@ import PointNewPresenter from './point-new-presenter';
 import PointListEmpty from '../view/point-list-empty';
 import PointsListSortView from '../view/points-list-sort-view';
 import PointListView from '../view/point-list-view';
+import LoadingView from '../view/loading-view';
 import {render, RenderPosition, remove} from '../utils/render';
 import {sortByDay, sortByTime, sortByPrice} from '../utils/point';
 import {filter} from '../utils/filter';
-import {POINT_COUNT, SortType, UpdateType, UserAction, FilterType} from '../const';
+import {SortType, UpdateType, UserAction, FilterType} from '../const';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -14,12 +15,14 @@ export default class TripPresenter {
   #filterModel = null;
   #sortComponent = null;
   #pointListComponent = new PointListView();
+  #loadingComponent = new LoadingView();
   #pointEmptyComponent = null;
 
   #pointPresenter = new Map();
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor(tripContainer, pointsModel, filterModel) {
     this.#tripContainer = tripContainer;
@@ -93,6 +96,11 @@ export default class TripPresenter {
         this.#clearTripPoints({resetSortType: true});
         this.#renderTripPoints();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderTripPoints();
+        break;
     }
   }
 
@@ -121,6 +129,10 @@ export default class TripPresenter {
     render(this.#tripContainer, this.#pointListComponent, RenderPosition.BEFOREEND);
   }
 
+  #renderLoading = () => {
+    render(this.#tripContainer, this.#loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
   #renderEmptyPoints = () => {
     this.#pointEmptyComponent = new PointListEmpty(this.#filterType);
     render(this.#tripContainer, this.#pointEmptyComponent, RenderPosition.BEFOREEND);
@@ -131,6 +143,7 @@ export default class TripPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     if (this.#pointEmptyComponent) {
       remove(this.#pointEmptyComponent);
     }
@@ -140,6 +153,10 @@ export default class TripPresenter {
   }
 
   #renderTripPoints = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     const pointCount = this.points.length;
     if (pointCount === 0) {
       this.#renderEmptyPoints();
@@ -147,7 +164,7 @@ export default class TripPresenter {
     }
     this.#renderSort();
     this.#renderPointList();
-    for (let i = 0; i < POINT_COUNT; i++) {
+    for (let i = 0; i < pointCount; i++) {
       this.#renderPoint(this.points[i]);
     }
   }

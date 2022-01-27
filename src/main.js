@@ -2,28 +2,27 @@ import {RenderPosition, render, remove} from './utils/render';
 import TripInfoView from './view/trip-info-view';
 import TripTabsView from './view/trip-tabs-view';
 import StatisticsView from './view/statistics-view';
-import {generatePoint} from './mock/point';
-import {POINT_COUNT, MenuItem, pointTypes} from './const';
+import {MenuItem, pointTypes} from './const';
 import TripPresenter from './presenter/trip-presenter';
 import PointsModel from './model/points-model';
 import FilterModel from './model/filter-model';
 import FilterPresenter from './presenter/filter-presenter';
+import ApiService from './api-service';
 
-const points = Array.from({length: POINT_COUNT}, generatePoint);
-
-const pointsModel = new PointsModel();
-pointsModel.points = points;
-const filterModel = new FilterModel();
+const AUTHORIZATION = 'Basic nhsdgoiafb837tyv';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');
 const tripControlsElement = tripMainElement.querySelector('.trip-main__trip-controls');
 const tripNavigationElement = tripControlsElement.querySelector('.trip-controls__navigation');
 const tripFiltersElement = tripControlsElement.querySelector('.trip-controls__filters');
 
+const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
+const filterModel = new FilterModel();
+
 const tripTabsComponent = new TripTabsView();
 
 render(tripMainElement, new TripInfoView(), RenderPosition.AFTERBEGIN);
-render(tripNavigationElement, tripTabsComponent, RenderPosition.AFTERBEGIN);
 
 const pageMainElement = document.querySelector('.page-main');
 const tripPointsElement = pageMainElement.querySelector('.trip-events');
@@ -50,10 +49,12 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
-tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
-
 filterPresenter.init();
 tripPresenter.init();
+pointsModel.init().finally(() => {
+  render(tripNavigationElement, tripTabsComponent, RenderPosition.AFTERBEGIN);
+  tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
+});
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
