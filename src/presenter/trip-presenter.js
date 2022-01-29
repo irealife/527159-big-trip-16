@@ -1,4 +1,4 @@
-import PointPresenter from '../presenter/point-presenter';
+import PointPresenter, {State as PointPresenterViewState} from '../presenter/point-presenter';
 import PointNewPresenter from './point-new-presenter';
 import PointListEmpty from '../view/point-list-empty';
 import PointsListSortView from '../view/points-list-sort-view';
@@ -72,12 +72,15 @@ export default class TripPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.SAVING);
         this.#pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
+        this.#pointNewPresenter.setSaving();
         this.#pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.DELETING);
         this.#pointsModel.deletePoint(updateType, update);
         break;
     }

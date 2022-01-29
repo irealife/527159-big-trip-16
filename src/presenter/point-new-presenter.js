@@ -1,5 +1,4 @@
 import PointEditView from '../view/point-edit-view';
-import {nanoid} from 'nanoid';
 import {render, RenderPosition, remove} from '../utils/render';
 import {UserAction, UpdateType} from '../const';
 
@@ -40,13 +39,19 @@ export  default class PointNewPresenter {
     }
   }
 
+  setSaving = () => {
+    this.#pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
   #handleFormSubmit = (point) => {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...point},
+      point,
     );
-    this.destroy();
   }
 
   #handleDeleteClick = (point) => {
