@@ -98,7 +98,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${Object.values(data.offers).map((item) => createPointOffers(item)).join('')}
+          ${Object.keys(offers).filter((item) => item === data.pointType)}
         </div>
       </section>
       <section class="event__section  event__section--destination">
@@ -237,6 +237,7 @@ export default class PointEditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       pointType: evt.target.value,
+      offers: {},
     });
   }
 

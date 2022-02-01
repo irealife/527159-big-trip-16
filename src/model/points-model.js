@@ -12,9 +12,9 @@ export default class PointsModel extends AbstractObservable {
     this.#apiService = apiService;
   }
 
-  set points(points) {
-    this.#points = [...points];
-  }
+  // set points(points) {
+  //   this.#points = [...points];
+  // }
 
   get points() {
     return this.#points;
@@ -34,7 +34,7 @@ export default class PointsModel extends AbstractObservable {
       const offers = await this.#apiService.offers;
       this.#destinations = await this.#apiService.destinations;
       this.#points = points.map(this.#adaptToClient);
-      this.#offers = offers.forEach((offer) => {
+      offers.forEach((offer) => {
         this.#offers[offer.type] = offer.offers
       });
     } catch (err) {
