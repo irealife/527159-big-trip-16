@@ -12,10 +12,6 @@ export default class PointsModel extends AbstractObservable {
     this.#apiService = apiService;
   }
 
-  // set points(points) {
-  //   this.#points = [...points];
-  // }
-
   get points() {
     return this.#points;
   }
@@ -100,6 +96,7 @@ export default class PointsModel extends AbstractObservable {
       price: point['base_price'],
       dateFrom: new Date(point['date_from']),
       dateTo: new Date(point['date_to']),
+      offers: point.offers.map((offer) => offer.id),
     };
     delete adaptedPoint.type;
     delete adaptedPoint.is_favorite;

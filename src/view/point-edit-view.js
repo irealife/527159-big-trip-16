@@ -33,14 +33,14 @@ const createPointTypes = (pointTypeCurrent, isDisabled) => pointTypes.map((type)
   </label>
 </div>`).join('');
 
-const createPointOffers = (offer, isDisabled) => `<div class="event__offer-selector">
+const createPointOffers = (offer) => `<div class="event__offer-selector">
   <input
     class="event__offer-checkbox  visually-hidden"
     id="event-offer-${offer.title}-1"
     type="checkbox"
+    value="${offer.id}"
     name="event-offer-${offer.title}"
     ${offer.isChecked ? 'checked' : ''}
-    ${isDisabled ? 'disabled' : ''}
   />
   <label
     class="event__offer-label"
@@ -98,7 +98,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${Object.keys(offers).filter((item) => item === data.pointType)}
+          ${offers[data.pointType].map((offer) => createPointOffers({...offer, isChecked: data.offers.includes(offer.id)})).join('')}
         </div>
       </section>
       <section class="event__section  event__section--destination">
@@ -212,6 +212,7 @@ export default class PointEditView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#pointOfferChangeHandler);
   }
 
   #destinationInputHandler = (evt) => {
@@ -237,8 +238,16 @@ export default class PointEditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       pointType: evt.target.value,
-      offers: {},
+      offers: [],
     });
+  }
+
+  #pointOfferChangeHandler = (evt) => {
+    const offers = evt.target.checked ? [...this._data.offers, Number(evt.target.value)] : this._data.offers.filter((id) => id !== Number(evt.target.value))
+    console.log(offers);
+    this.updateData({
+      offers,
+    }, true);
   }
 
   #saveFormSubmitHandler = (evt) => {
@@ -262,6 +271,7 @@ export default class PointEditView extends SmartView {
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;
+    //const offers = this.#offers[point.pointType].filter((offer) => offer = offer.id);
     return point;
   }
 }
