@@ -4,11 +4,13 @@ import {UserAction, UpdateType} from '../const';
 
 export  default class PointNewPresenter {
   #pointListContainer = null;
+  #pointsModel = null;
   #changeData = null;
   #pointEditComponent = null;
 
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, pointsModel, changeData) {
     this.#pointListContainer = pointListContainer;
+    this.#pointsModel = pointsModel;
     this.#changeData = changeData;
   }
 
@@ -16,7 +18,7 @@ export  default class PointNewPresenter {
     if (this.#pointEditComponent !== null) {
       return;
     }
-    this.#pointEditComponent = new PointEditView();
+    this.#pointEditComponent = new PointEditView(this.#pointsModel.destinations, this.#pointsModel.offers);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
     render(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
@@ -44,6 +46,17 @@ export  default class PointNewPresenter {
       isDisabled: true,
       isSaving: true,
     });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    this.#pointEditComponent.shake(resetFormState);
   }
 
   #handleFormSubmit = (point) => {

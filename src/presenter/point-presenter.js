@@ -12,10 +12,12 @@ const Mode = {
 export const State = {
   SAVING: 'SAVING',
   DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
 };
 
 export  default class PointPresenter {
   #pointListContainer = null;
+  #pointsModel = null;
   #pointComponent = null;
   #pointEditComponent = null;
   #point = null;
@@ -24,8 +26,9 @@ export  default class PointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor(pointListContainer, changeData, changeMode) {
+  constructor(pointListContainer, pointsModel, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
+    this.#pointsModel = pointsModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
   }
@@ -35,7 +38,7 @@ export  default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
     this.#pointComponent = new PointItemView(point);
-    this.#pointEditComponent = new PointEditView(point);
+    this.#pointEditComponent = new PointEditView(this.#pointsModel.destinations, this.#pointsModel.offers, point);
 
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
@@ -76,6 +79,13 @@ export  default class PointPresenter {
     if (this.#mode === Mode.DEFAULT) {
       return;
     }
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
     switch (state) {
       case State.SAVING:
         this.#pointEditComponent.updateData({
@@ -88,6 +98,10 @@ export  default class PointPresenter {
           isDisabled: true,
           isDeleting: true,
         });
+        break;
+      case State.ABORTING:
+        this.#pointComponent.shake(resetFormState);
+        this.#pointEditComponent.shake(resetFormState);
         break;
     }
   }

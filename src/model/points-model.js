@@ -5,7 +5,7 @@ export default class PointsModel extends AbstractObservable {
   #apiService = null;
   #points = [];
   #destinations = [];
-  #offers = [];
+  #offers = {};
 
   constructor(apiService) {
     super();
@@ -31,13 +31,16 @@ export default class PointsModel extends AbstractObservable {
   init = async () => {
     try {
       const points = await this.#apiService.points;
-      this.#points = points.map(this.#adaptToClient);
+      const offers = await this.#apiService.offers;
       this.#destinations = await this.#apiService.destinations;
-      this.#offers = await this.#apiService.offers;
+      this.#points = points.map(this.#adaptToClient);
+      this.#offers = offers.forEach((offer) => {
+        this.#offers[offer.type] = offer.offers
+      });
     } catch (err) {
       this.#points = [];
       this.#destinations = [];
-      this.#offers = [];
+      this.#offers = {};
     }
     this._notify(UpdateType.INIT);
   }
@@ -79,11 +82,10 @@ export default class PointsModel extends AbstractObservable {
       throw new Error('Can\'t delete unexisting point');
     }
     try {
-      console.log(this.#apiService.deletePoint(update));
       await this.#apiService.deletePoint(update);
       this.#points = [
         ...this.#points.slice(0, index),
-        ...this.#points.slice(index, +1),
+        ...this.#points.slice(index + 1),
       ];
       this._notify(updateType);
     } catch (err) {

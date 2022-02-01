@@ -2,14 +2,12 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import {pointTypes} from '../const';
 import {toUpperCaseFirstSymbol, getDateTimeFullFormat} from '../utils/point';
-import {destinations} from '../mock/point';
 import SmartView from './smart-view';
 import dayjs from 'dayjs';
-import he from 'he';
 
 const BLANK_POINT = {
   pointType: pointTypes[0],
-  destination: destinations[0],
+  destination: '',
   descriptions: '',
   dateFrom: dayjs().toDate(),
   dateTo: dayjs().toDate(),
@@ -54,10 +52,7 @@ const createPointOffers = (offer, isDisabled) => `<div class="event__offer-selec
   </label>
 </div>`;
 
-// в коде не работает сейчас, если подставить это выражение с классом event__destination-description
-//${point.descriptions[point.destination].text}
-
-const createEditPointTemplate = (data) => {
+const createEditPointTemplate = (data, destinations, offers) => {
   const pointTypeTemplate = createPointTypes(data.pointType, data.isDisabled);
   return `<form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -76,8 +71,8 @@ const createEditPointTemplate = (data) => {
       </div>
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">${data.pointType}</label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${data.destination} list="destination-list-1">
-        <datalist id="destination-list-1" ${data.isDisabled ? 'disabled' : ''}>${destinations.map((item) => `<option value="${he.encode(item)}"></option>`).join('')}</datalist>
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${data.destination.name} list="destination-list-1">
+        <datalist id="destination-list-1" ${data.isDisabled ? 'disabled' : ''}>${Object.values(destinations).map((item) => `<option value="${item.name}"></option>`).join('')}</datalist>
       </div>
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -108,26 +103,35 @@ const createEditPointTemplate = (data) => {
       </section>
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">Текст</p>
+        <p class="event__destination-description">${data.destination.description}</p>
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${data.destination ? data.destination.pictures.map((image) => `<img class="event__photo" src="${image.src}" alt="${image.description}">`).join('') : ''}
+          </div>
+        </div>
       </section>
     </section>
   </form>`
 };
 
 export default class PointEditView extends SmartView {
+  #destinations = [];
+  #offers = {};
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(point = BLANK_POINT) {
+  constructor(destinations, offers, point = BLANK_POINT) {
     super();
     this._data = PointEditView.parsePointToData(point);
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#setInnerHandlers();
     this.#setDateFromPicker();
     this.#setDateToPicker();
   }
 
   get template() {
-    return createEditPointTemplate(this._data);
+    return createEditPointTemplate(this._data, this.#destinations, this.#offers);
   }
 
   removeElement = () => {
@@ -247,7 +251,6 @@ export default class PointEditView extends SmartView {
   }
 
   static parsePointToData = (point) => ({...point,
-    isDestination: point.destination,
     isDisabled: false,
     isSaving: false,
     isDeleting: false,
@@ -255,10 +258,6 @@ export default class PointEditView extends SmartView {
 
   static parseDataToPoint = (data) => {
     const point = {...data};
-    if (!point.isDestination) {
-      point.isDestination = data.isDestination;
-    }
-    delete point.isDestination;
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;

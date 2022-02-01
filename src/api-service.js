@@ -18,6 +18,14 @@ export default class ApiService {
     return this.#load({url: 'points'}).then(ApiService.parseResponse);
   }
 
+  get destinations () {
+    return this.#load({url: 'destinations'}).then(ApiService.parseResponse);
+  }
+
+  get offers () {
+    return this.#load({url: 'offers'}).then(ApiService.parseResponse);
+  }
+
   updatePoint = async (point) => {
     const response = await this.#load({
       url: `points/${point.id}`,
