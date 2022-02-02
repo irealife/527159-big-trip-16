@@ -23,6 +23,7 @@ export  default class PointNewPresenter {
     this.#pointEditComponent = new PointEditView(this.#pointsModel.destinations, this.#pointsModel.offers);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#pointEditComponent.setCloseEditClickHandler(this.#handleDeleteClick);
     render(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
@@ -70,11 +71,7 @@ export  default class PointNewPresenter {
     );
   }
 
-  #handleDeleteClick = (point) => {
-    this.#changeData(
-      UserAction.DELETE_POINT,
-      UpdateType.MINOR,
-      point,
-    );
+  #handleDeleteClick = () => {
+    this.destroy();
   }
 }

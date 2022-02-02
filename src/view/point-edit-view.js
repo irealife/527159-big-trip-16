@@ -71,7 +71,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
       </div>
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">${data.pointType}</label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.destination ? data.destination.name : ''}" list="destination-list-1" required="true">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.destination ? data.destination.name : ''}" list="destination-list-1" required>
         <datalist id="destination-list-1" ${data.isDisabled ? 'disabled' : ''}>${Object.values(destinations).map((item) => `<option value="${item.name}"></option>`).join('')}</datalist>
       </div>
       <div class="event__field-group  event__field-group--time">
@@ -86,7 +86,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
           <span class="visually-hidden">${data.price}</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${data.price} required="true">
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${data.price}" required>
       </div>
       <button class="event__save-btn  btn  btn--blue" type="submit" ${data.isDisabled ? 'disabled' : ''}>${data.isSaving ? 'saving...' : 'save'}</button>
       <button class="event__reset-btn" type="reset" ${data.isDisabled ? 'disabled' : ''}>${data.isDeleting ? 'deleting' : 'delete'}</button>
