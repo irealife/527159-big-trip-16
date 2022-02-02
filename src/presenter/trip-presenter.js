@@ -1,4 +1,4 @@
-import PointPresenter from '../presenter/point-presenter';
+import PointPresenter, {State as PointPresenterViewState} from '../presenter/point-presenter';
 import PointNewPresenter from './point-new-presenter';
 import PointListEmpty from '../view/point-list-empty';
 import PointsListSortView from '../view/points-list-sort-view';
@@ -17,6 +17,8 @@ export default class TripPresenter {
   #pointListComponent = new PointListView();
   #loadingComponent = new LoadingView();
   #pointEmptyComponent = null;
+  #tripMainElement = null;
+  #buttonNewComponent = null;
 
   #pointPresenter = new Map();
   #pointNewPresenter = null;
@@ -24,12 +26,14 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(tripContainer, pointsModel, filterModel) {
+  constructor(tripContainer, pointsModel, filterModel, tripMainElement, buttonNewComponent) {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#tripMainElement = tripMainElement;
+    this.#buttonNewComponent = buttonNewComponent;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#pointsModel, this.#handleViewAction, this.#buttonNewComponent);
   }
 
   get points() {
@@ -47,6 +51,14 @@ export default class TripPresenter {
     return filteredPoints;
   }
 
+  get offers() {
+    return this.#pointsModel.offers;
+  }
+
+  get destinations() {
+    return this.#pointsModel.destinations;
+  }
+
   init = () => {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -61,7 +73,7 @@ export default class TripPresenter {
   }
 
   createPoint = () => {
-    this.#pointNewPresenter.init();
+    this.#pointNewPresenter.init(this.#pointsModel.offers, this.#pointsModel.destinations);
   }
 
   #handleModeChange = () => {
@@ -69,16 +81,31 @@ export default class TripPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
     }
   }
@@ -113,6 +140,10 @@ export default class TripPresenter {
     this.#renderTripPoints();
   }
 
+  #renderButtonNewComponent = () => {
+    render(this.#tripMainElement, this.#buttonNewComponent, RenderPosition.BEFOREEND);
+  }
+
   #renderSort = () => {
     this.#sortComponent = new PointsListSortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -120,8 +151,8 @@ export default class TripPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(point);
+    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#pointsModel, this.#handleViewAction, this.#handleModeChange);
+    pointPresenter.init(point, this.#pointsModel.offers, this.#pointsModel.destinations);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
@@ -157,6 +188,7 @@ export default class TripPresenter {
       this.#renderLoading();
       return;
     }
+    this.#renderButtonNewComponent();
     const pointCount = this.points.length;
     if (pointCount === 0) {
       this.#renderEmptyPoints();

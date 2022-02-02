@@ -112,17 +112,17 @@ const renderCharts = (currentChart, ctx, labels, data) => {
 };
 
 const renderMoneyCharts = (node, points, pointTypeSortByItem) => {
-  points.forEach((point) => pointTypeSortByItem[point.pointType] += point.price);
+  points.forEach((point) => (pointTypeSortByItem[point.pointType] += point.price));
   return renderCharts(ChartItem.MONEY, node, Object.keys(pointTypeSortByItem), Object.values(pointTypeSortByItem));
 };
 
 const renderTypeCharts = (node, points, pointTypeSortByItem) => {
-  points.forEach((point) => pointTypeSortByItem[point.pointType] += 1);
+  points.forEach((point) => (pointTypeSortByItem[point.pointType] += 1));
   return renderCharts(ChartItem.TYPE, node, Object.keys(pointTypeSortByItem), Object.values(pointTypeSortByItem));
 };
 
 const renderTimeCharts = (node, points, pointTypeSortByItem) => {
-  points.forEach((point) => pointTypeSortByItem[point.pointType] += (point.dateTo - point.dateFrom));
+  points.forEach((point) => (pointTypeSortByItem[point.pointType] += (point.dateTo - point.dateFrom)));
   return renderCharts(ChartItem.TIME, node, Object.keys(pointTypeSortByItem), Object.values(pointTypeSortByItem));
 };
 
@@ -187,7 +187,7 @@ export default class StatisticsView extends SmartView {
     typeCtx.height = BAR_HEIGHT * 8;
     timeCtx.height = BAR_HEIGHT * 8;
     const pointTypeSortByItem = {};
-    this.#pointTypes.forEach((pointType) => pointTypeSortByItem[pointType] = 0);
+    this.#pointTypes.forEach((pointType) => (pointTypeSortByItem[pointType] = 0));
     this.#moneyChart = renderMoneyCharts(moneyCtx, this._data.points, {...pointTypeSortByItem});
     this.#typeChart = renderTypeCharts(typeCtx, this._data.points, {...pointTypeSortByItem});
     this.#timeChart = renderTimeCharts(timeCtx, this._data.points, {...pointTypeSortByItem});

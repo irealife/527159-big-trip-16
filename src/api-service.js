@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -16,6 +18,14 @@ export default class ApiService {
     return this.#load({url: 'points'}).then(ApiService.parseResponse);
   }
 
+  get destinations () {
+    return this.#load({url: 'destinations'}).then(ApiService.parseResponse);
+  }
+
+  get offers () {
+    return this.#load({url: 'offers'}).then(ApiService.parseResponse);
+  }
+
   updatePoint = async (point) => {
     const response = await this.#load({
       url: `points/${point.id}`,
@@ -23,8 +33,27 @@ export default class ApiService {
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
-    const parseResponse = await ApiService.parseResponse(response);
-    return parseResponse;
+    const parsedResponse = await ApiService.parseResponse(response);
+    return parsedResponse;
+  }
+
+  addPoint = async (point) => {
+    const response = await this.#load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+    const parsedResponse = await ApiService.parseResponse(response);
+    return parsedResponse;
+  }
+
+  deletePoint = async (point) => {
+    const response = await this.#load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+    });
+    return response;
   }
 
   #load = async ({
@@ -53,6 +82,7 @@ export default class ApiService {
       'base_price': point.price,
       'date_from': point.dateFrom,
       'date_to': point.dateTo,
+      'offers': Object.values(point.offers),
     };
     delete adaptedPoint.pointType;
     delete adaptedPoint.isFavorite;
