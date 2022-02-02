@@ -1,10 +1,11 @@
 import AbstractObservable from '../utils/abstract-observable';
 import {UpdateType} from '../const';
+import {convertArrayToObject} from '../utils/common';
 
 export default class PointsModel extends AbstractObservable {
   #apiService = null;
   #points = [];
-  #destinations = [];
+  #destinations = {};
   #offers = {};
 
   constructor(apiService) {
@@ -28,14 +29,13 @@ export default class PointsModel extends AbstractObservable {
     try {
       const points = await this.#apiService.points;
       const offers = await this.#apiService.offers;
-      this.#destinations = await this.#apiService.destinations;
+      const destinations = await this.#apiService.destinations;
       this.#points = points.map(this.#adaptToClient);
-      offers.forEach((offer) => {
-        this.#offers[offer.type] = offer.offers
-      });
+      this.#offers = convertArrayToObject(offers, 'type');
+      this.#destinations = convertArrayToObject(destinations, 'name');
     } catch (err) {
       this.#points = [];
-      this.#destinations = [];
+      this.#destinations = {};
       this.#offers = {};
     }
     this._notify(UpdateType.INIT);
@@ -96,7 +96,7 @@ export default class PointsModel extends AbstractObservable {
       price: point['base_price'],
       dateFrom: new Date(point['date_from']),
       dateTo: new Date(point['date_to']),
-      offers: point.offers.map((offer) => offer.id),
+      offers: convertArrayToObject(point.offers, 'id'),
     };
     delete adaptedPoint.type;
     delete adaptedPoint.is_favorite;

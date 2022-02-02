@@ -7,12 +7,12 @@ import dayjs from 'dayjs';
 
 const BLANK_POINT = {
   pointType: pointTypes[0],
-  destination: '',
-  descriptions: '',
+  destination: undefined,
   dateFrom: dayjs().toDate(),
   dateTo: dayjs().toDate(),
   price: '',
-  offers: '',
+  offers: {},
+  isFavorite: false,
 };
 
 const createPointTypes = (pointTypeCurrent, isDisabled) => pointTypes.map((type) => `<div class="event__type-item">
@@ -71,7 +71,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
       </div>
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">${data.pointType}</label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${data.destination.name} list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${data.destination ? data.destination.name : ''}" list="destination-list-1" required="true">
         <datalist id="destination-list-1" ${data.isDisabled ? 'disabled' : ''}>${Object.values(destinations).map((item) => `<option value="${item.name}"></option>`).join('')}</datalist>
       </div>
       <div class="event__field-group  event__field-group--time">
@@ -86,7 +86,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
           <span class="visually-hidden">${data.price}</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${data.price}>
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value=${data.price} required="true">
       </div>
       <button class="event__save-btn  btn  btn--blue" type="submit" ${data.isDisabled ? 'disabled' : ''}>${data.isSaving ? 'saving...' : 'save'}</button>
       <button class="event__reset-btn" type="reset" ${data.isDisabled ? 'disabled' : ''}>${data.isDeleting ? 'deleting' : 'delete'}</button>
@@ -98,12 +98,12 @@ const createEditPointTemplate = (data, destinations, offers) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-          ${offers[data.pointType].map((offer) => createPointOffers({...offer, isChecked: data.offers.includes(offer.id)})).join('')}
+          ${offers[data.pointType].offers.map((offer) => createPointOffers({...offer, isChecked: !!data.offers[offer.id]})).join('')}
         </div>
       </section>
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${data.destination.description}</p>
+        <p class="event__destination-description">${data.destination ? data.destination.description : ''}</p>
         <div class="event__photos-container">
           <div class="event__photos-tape">
             ${data.destination ? data.destination.pictures.map((image) => `<img class="event__photo" src="${image.src}" alt="${image.description}">`).join('') : ''}
@@ -111,7 +111,7 @@ const createEditPointTemplate = (data, destinations, offers) => {
         </div>
       </section>
     </section>
-  </form>`
+  </form>`;
 };
 
 export default class PointEditView extends SmartView {
@@ -210,16 +210,17 @@ export default class PointEditView extends SmartView {
   }
 
   #setInnerHandlers = () => {
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationInputHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#pointOfferChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#pointPriceChangeHandler);
   }
 
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      destination: evt.target.value,
-    }, true);
+      destination: this.#destinations[evt.target.value],
+    });
   }
 
   #dateFromChangeHandler = ([userDate]) => {
@@ -238,20 +239,31 @@ export default class PointEditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       pointType: evt.target.value,
-      offers: [],
+      offers: {},
     });
   }
 
   #pointOfferChangeHandler = (evt) => {
-    const offers = evt.target.checked ? [...this._data.offers, Number(evt.target.value)] : this._data.offers.filter((id) => id !== Number(evt.target.value))
-    console.log(offers);
+    const offers = this._data.offers;
+    if (evt.target.checked) {
+      offers[evt.target.value] = this.#offers[this._data.pointType].offers.find((offer) => offer.id === Number(evt.target.value));
+    } else {
+      delete offers[evt.target.value];
+    }
     this.updateData({
       offers,
+    }, true);
+  };
+
+  #pointPriceChangeHandler = (evt) => {
+    this.updateData({
+      price: Number(evt.target.value),
     }, true);
   }
 
   #saveFormSubmitHandler = (evt) => {
     evt.preventDefault();
+    this.element.reportValidity();
     this._callback.saveFormSubmit(PointEditView.parseDataToPoint(this._data));
   }
 
@@ -271,7 +283,6 @@ export default class PointEditView extends SmartView {
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;
-    //const offers = this.#offers[point.pointType].filter((offer) => offer = offer.id);
     return point;
   }
 }

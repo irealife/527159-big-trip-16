@@ -4,3 +4,12 @@ export const getRandomInteger = (a = 0, b = 1) => {
 
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
+
+export const convertArrayToObject = (array, key) =>
+  array.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item[key]]: item
+    }),
+    {}
+  );

@@ -82,6 +82,7 @@ export default class ApiService {
       'base_price': point.price,
       'date_from': point.dateFrom,
       'date_to': point.dateTo,
+      'offers': Object.values(point.offers),
     };
     delete adaptedPoint.pointType;
     delete adaptedPoint.isFavorite;

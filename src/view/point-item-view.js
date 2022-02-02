@@ -3,7 +3,7 @@ import AbstractView from './abstract-view';
 
 const getPointOffers = (offers) => {
   const pointOffers = [];
-  for (const offer of offers) {
+  for (const offer of Object.values(offers)) {
     pointOffers.push(
       `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
