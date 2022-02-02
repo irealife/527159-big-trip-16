@@ -2,6 +2,7 @@ import {RenderPosition, render, remove} from './utils/render';
 import TripInfoView from './view/trip-info-view';
 import TripTabsView from './view/trip-tabs-view';
 import StatisticsView from './view/statistics-view';
+import ButtonNewView from './view/button-new-view';
 import {MenuItem, pointTypes} from './const';
 import TripPresenter from './presenter/trip-presenter';
 import PointsModel from './model/points-model';
@@ -24,11 +25,13 @@ const tripTabsComponent = new TripTabsView();
 
 render(tripMainElement, new TripInfoView(), RenderPosition.AFTERBEGIN);
 
+const buttonNewComponent = new ButtonNewView();
+
 const pageMainElement = document.querySelector('.page-main');
 const tripPointsElement = pageMainElement.querySelector('.trip-events');
 
 const filterPresenter = new FilterPresenter(tripFiltersElement, filterModel);
-const tripPresenter = new TripPresenter(tripPointsElement, pointsModel, filterModel);
+const tripPresenter = new TripPresenter(tripPointsElement, pointsModel, filterModel, tripMainElement, buttonNewComponent);
 
 let statisticsComponent = null;
 
@@ -39,10 +42,12 @@ const handleSiteMenuClick = (menuItem) => {
       tripPresenter.destroy();
       tripPresenter.init();
       remove(statisticsComponent);
+      buttonNewComponent.activateButton();
       break;
     case MenuItem.STATS:
       filterPresenter.destroy();
       tripPresenter.destroy();
+      buttonNewComponent.disableButton();
       statisticsComponent = new StatisticsView(pointsModel.points, pointTypes);
       render(pageMainElement, statisticsComponent, RenderPosition.AFTERBEGIN);
       break;
@@ -56,7 +61,8 @@ pointsModel.init().finally(() => {
   tripTabsComponent.setMenuClickHandler(handleSiteMenuClick);
 });
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+buttonNewComponent.element.addEventListener('click', (evt) => {
   evt.preventDefault();
   tripPresenter.createPoint();
+  buttonNewComponent.disableButton();
 });
