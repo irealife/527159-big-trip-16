@@ -16,14 +16,6 @@ export default class TripTabsView extends AbstractView {
     this.element.addEventListener('click', this.#menuClickHandler);
   }
 
-  setMenuItem = (menuItem) => {
-    const item = this.element.querySelector(`[name=${menuItem}]`);
-    if (item !== null) {
-      item.classList.toggle('trip-tabs__btn--active');
-      item.checked = true;
-    }
-  }
-
   #menuClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.menuClick(evt.target.name);

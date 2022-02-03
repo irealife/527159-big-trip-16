@@ -8,18 +8,22 @@ const ChartItem = {
   TIME: 'time',
 };
 
-const MIN_ONE_HOUR = 60;
-const MIN_ONE_DAY = 60 * 24;
+const MILLISECONDS = 1000;
+const MINUTES = 60;
+const HOURS = 24;
+const DAY = MINUTES * HOURS;
+
+const BAR_HEIGHT = 55 * 8;
 
 const dateFormat = (dateDuration) => {
-  const dateTime = dateDuration / 1000 / 60;
-  const days = Math.floor(dateTime / 60 / 24);
-  const hours = Math.floor(dateTime / 60 % 24);
-  const minutes = Math.floor(dateTime  % 60);
-  if (dateDuration < MIN_ONE_HOUR) {
+  const dateTime = dateDuration / MILLISECONDS / MINUTES;
+  const days = Math.floor(dateTime / MINUTES / HOURS);
+  const hours = Math.floor(dateTime / MINUTES % HOURS);
+  const minutes = Math.floor(dateTime % MINUTES);
+  if (dateDuration < MINUTES) {
     return minutes < 10 ? `0${minutes}M` : `${minutes}M`;
   }
-  if (dateDuration < MIN_ONE_DAY) {
+  if (dateDuration < DAY) {
     return `${hours}H ${minutes}M`;
   }
   return `${days}D ${hours}H ${minutes}M`;
@@ -179,13 +183,12 @@ export default class StatisticsView extends SmartView {
   }
 
   #setCharts = () => {
-    const BAR_HEIGHT = 55;
     const moneyCtx = this.element.querySelector('#money');
     const typeCtx = this.element.querySelector('#type');
     const timeCtx = this.element.querySelector('#time');
-    moneyCtx.height = BAR_HEIGHT * 8;
-    typeCtx.height = BAR_HEIGHT * 8;
-    timeCtx.height = BAR_HEIGHT * 8;
+    moneyCtx.height = BAR_HEIGHT;
+    typeCtx.height = BAR_HEIGHT;
+    timeCtx.height = BAR_HEIGHT;
     const pointTypeSortByItem = {};
     this.#pointTypes.forEach((pointType) => (pointTypeSortByItem[pointType] = 0));
     this.#moneyChart = renderMoneyCharts(moneyCtx, this._data.points, {...pointTypeSortByItem});

@@ -196,8 +196,8 @@ export default class TripPresenter {
     }
     this.#renderSort();
     this.#renderPointList();
-    for (let i = 0; i < pointCount; i++) {
-      this.#renderPoint(this.points[i]);
+    for (const point of this.points) {
+      this.#renderPoint(point);
     }
   }
 }
